@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
+use App\Services\RecaptchaService;
 
 class AuthController extends Controller
 {
@@ -20,11 +21,18 @@ class AuthController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'email' => 'required|email',
-            'password' => 'required'
+            'password' => 'required',
+            'g-recaptcha-response' => 'required'
         ]);
 
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        // Validate reCAPTCHA
+        $recaptchaService = new RecaptchaService();
+        if (!$recaptchaService->verify($request->input('g-recaptcha-response'), $request->ip())) {
+            return redirect()->back()->withErrors(['g-recaptcha-response' => 'reCAPTCHA verification failed.'])->withInput();
         }
 
         $credentials = $request->only('email', 'password');
@@ -64,12 +72,19 @@ class AuthController extends Controller
             'last_name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:8|confirmed',
-            'terms' => 'required'
+            'terms' => 'required',
+            'g-recaptcha-response' => 'required'
         ]);
 
         if ($validator->fails()) {
             \Log::info('Validation failed', $validator->errors()->toArray());
             return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        // Validate reCAPTCHA
+        $recaptchaService = new RecaptchaService();
+        if (!$recaptchaService->verify($request->input('g-recaptcha-response'), $request->ip())) {
+            return redirect()->back()->withErrors(['g-recaptcha-response' => 'reCAPTCHA verification failed.'])->withInput();
         }
 
         $user = User::create([

@@ -8,6 +8,7 @@
 @endsection
 
 @section('scripts')
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
 <script>
     // Prevent back button access after logout
     window.history.pushState(null, null, window.location.href);
@@ -107,6 +108,12 @@
                                                 </label>
                                             </div>
                                         </div>
+                                    </div>
+                                    <div class="col-xl-12 mt-3">
+                                        <div class="g-recaptcha" data-sitekey="{{ config('services.recaptcha.site_key') }}"></div>
+                                        @error('g-recaptcha-response')
+                                            <div class="text-danger mt-1">{{ $message }}</div>
+                                        @enderror
                                     </div>
                                     <div class="col-xl-12 d-grid mt-2">
                                         <button type="submit" class="btn btn-lg btn-primary">Sign In</button>
