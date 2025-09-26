@@ -60,9 +60,11 @@
             <!-- END HEADER -->
 
             <!-- SIDEBAR -->
-
-            @include('layouts.components.sidebar')
-
+            @if(request()->is('hrm*'))
+                @include('layouts.components.hrm-sidebar')
+            @else
+                @include('layouts.components.sidebar')
+            @endif
             <!-- END SIDEBAR -->
 
             <!-- MAIN-CONTENT -->

@@ -18,6 +18,11 @@ class AdminController extends Controller
 {
     public function dashboard()
     {
+        return view('admin.dashboard');
+    }
+
+    public function users()
+    {
         // Only show users that belong to the current admin
         $users = User::where('role_id', 3)
                     ->where('admin_id', auth()->id())
@@ -31,7 +36,18 @@ class AdminController extends Controller
                     })
                     ->get();
         
-        return view('admin.dashboard', compact('users', 'modules', 'userTypes', 'userModules'));
+        return view('admin.users', compact('users', 'modules', 'userTypes', 'userModules'));
+    }
+
+    public function modules()
+    {
+        $modules = Module::all();
+        return view('admin.modules', compact('modules'));
+    }
+
+    public function settings()
+    {
+        return view('admin.settings');
     }
 
     public function addUser(Request $request)

@@ -22,7 +22,9 @@ use App\Http\Controllers\IconsController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\GoogleAuthController;
+use App\Http\Controllers\HRMController;
 use App\Http\Controllers\SuperAdminController;
+use App\Http\Controllers\SupervisorController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\DashboardController;
 
@@ -287,9 +289,16 @@ Route::middleware(['auth', 'superadmin', 'prevent.back'])->prefix('superadmin')-
         // Admin Routes
         Route::middleware(['auth', 'admin', 'prevent.back'])->prefix('admin')->name('admin.')->group(function () {
             Route::get('dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
+            Route::get('users', [AdminController::class, 'users'])->name('users');
+            Route::get('modules', [AdminController::class, 'modules'])->name('modules');
+            Route::get('settings', [AdminController::class, 'settings'])->name('settings');
             Route::post('users', [AdminController::class, 'addUser'])->name('users.add');
-            Route::get('users', [AdminController::class, 'getUsers'])->name('users.get');
+            Route::get('users/api', [AdminController::class, 'getUsers'])->name('users.get');
             Route::get('users/{id}/edit', [AdminController::class, 'showEditUser'])->name('users.edit.show');
+            
+            // Supervisor Management Routes
+            Route::resource('supervisors', SupervisorController::class);
+            Route::post('supervisors/{id}/reset-password', [SupervisorController::class, 'resetPassword'])->name('supervisors.reset-password');
             
             // User management routes with ownership middleware
             Route::middleware(['admin.user.ownership'])->group(function () {
@@ -306,6 +315,23 @@ Route::middleware(['auth', 'prevent.back'])->prefix('user')->name('user.')->grou
     Route::get('modules', [UserController::class, 'getMyModules'])->name('modules');
     Route::get('profile', [UserController::class, 'profile'])->name('profile');
     Route::put('profile', [UserController::class, 'updateProfile'])->name('profile.update');
+});
+
+// Module Routes
+Route::middleware(['auth', 'prevent.back'])->group(function () {
+    // HRM Module Routes (from Modules/HRM)
+    Route::prefix('hrm')->name('hrm.')->group(function () {
+        Route::get('/', 'Modules\HRM\Http\Controllers\HRMController@dashboard')->name('dashboard');
+        Route::get('/employees', 'Modules\HRM\Http\Controllers\HRMController@employees')->name('employees');
+        Route::get('/departments', 'Modules\HRM\Http\Controllers\HRMController@departments')->name('departments');
+        Route::get('/attendance', 'Modules\HRM\Http\Controllers\HRMController@attendance')->name('attendance');
+        Route::get('/payroll', 'Modules\HRM\Http\Controllers\HRMController@payroll')->name('payroll');
+        
+        // User Management Routes
+        Route::get('/users/create', 'Modules\HRM\Http\Controllers\HRMController@createUser')->name('users.create');
+        Route::post('/users', 'Modules\HRM\Http\Controllers\HRMController@storeUser')->name('users.store');
+        Route::get('/users', 'Modules\HRM\Http\Controllers\HRMController@users')->name('users.index');
+    });
 });
 
 // Debug Route

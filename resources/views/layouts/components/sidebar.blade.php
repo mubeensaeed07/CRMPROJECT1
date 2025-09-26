@@ -37,11 +37,32 @@
                                 </a>
                             </li>
                             @elseif(Auth::user()->isAdmin())
-                            <li class="slide">
-                                <a href="{{ route('admin.dashboard') }}" class="side-menu__item">
+                            <li class="slide has-sub">
+                                <a href="javascript:void(0);" class="side-menu__item">
                                     <i class="bx bx-user-check side-menu__icon"></i>
                                     <span class="side-menu__label">Admin Dashboard</span>
+                                    <i class="fe fe-chevron-right side-menu__angle"></i>
                                 </a>
+                                <ul class="slide-menu child1">
+                                    <li class="slide side-menu__label1">
+                                        <a href="javascript:void(0);">Admin Management</a>
+                                    </li>
+                                    <li class="slide">
+                                        <a href="{{ route('admin.dashboard') }}" class="side-menu__item">Dashboard</a>
+                                    </li>
+                                    <li class="slide">
+                                        <a href="{{ route('admin.users') }}" class="side-menu__item">User Management</a>
+                                    </li>
+                                    <li class="slide">
+                                        <a href="{{ route('admin.modules') }}" class="side-menu__item">Module Management</a>
+                                    </li>
+                                    <li class="slide">
+                                        <a href="{{ route('admin.settings') }}" class="side-menu__item">System Settings</a>
+                                    </li>
+                                    <li class="slide">
+                                        <a href="{{ route('admin.supervisors.index') }}" class="side-menu__item">Supervisor Management</a>
+                                    </li>
+                                </ul>
                             </li>
                             @else
                             <li class="slide">
