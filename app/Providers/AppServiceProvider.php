@@ -19,6 +19,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        // Register HRM module views
+        $this->loadViewsFrom(base_path('Modules/HRM/Views'), 'hrm');
     }
 }

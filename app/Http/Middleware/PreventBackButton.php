@@ -17,8 +17,8 @@ class PreventBackButton
      */
     public function handle(Request $request, Closure $next)
     {
-        // If user is not authenticated, redirect to login
-        if (!Auth::check()) {
+        // Check if user is authenticated with either web or supervisor guard
+        if (!Auth::check() && !Auth::guard('supervisor')->check()) {
             return redirect()->route('login');
         }
         

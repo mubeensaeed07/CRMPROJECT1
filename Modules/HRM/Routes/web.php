@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Modules\HRM\Http\Controllers\HRMController;
 
-Route::middleware(['auth', 'prevent.back'])->prefix('hrm')->group(function () {
+Route::middleware(['auth:web,supervisor', 'prevent.back'])->prefix('hrm')->group(function () {
     Route::get('/', [HRMController::class, 'dashboard'])->name('hrm.dashboard');
     Route::get('/employees', [HRMController::class, 'employees'])->name('hrm.employees');
     Route::get('/departments', [HRMController::class, 'departments'])->name('hrm.departments');

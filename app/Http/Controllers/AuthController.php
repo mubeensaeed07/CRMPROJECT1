@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\Supervisor;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -19,6 +20,13 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
+        // Debug: Log login attempt
+        \Log::info('Login attempt', [
+            'email' => $request->email,
+            'ip' => $request->ip(),
+            'user_agent' => $request->userAgent()
+        ]);
+
         $validator = Validator::make($request->all(), [
             'email' => 'required|email',
             'password' => 'required',
@@ -26,10 +34,11 @@ class AuthController extends Controller
         ]);
 
         if ($validator->fails()) {
+            \Log::info('Validation failed', $validator->errors()->toArray());
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
-        // Validate reCAPTCHA
+        // Verify reCAPTCHA
         $recaptchaService = new RecaptchaService();
         if (!$recaptchaService->verify($request->input('g-recaptcha-response'), $request->ip())) {
             return redirect()->back()->withErrors(['g-recaptcha-response' => 'reCAPTCHA verification failed.'])->withInput();
@@ -37,20 +46,56 @@ class AuthController extends Controller
 
         $credentials = $request->only('email', 'password');
         
-        if (Auth::attempt($credentials)) {
-            $user = Auth::user();
+        // Try to authenticate as a regular user first
+        if (Auth::guard('web')->attempt($credentials)) {
+            $user = Auth::guard('web')->user();
             
             if (!$user->is_approved) {
-                Auth::logout();
+                Auth::guard('web')->logout();
                 return redirect()->back()->with('error', 'Your account is pending approval.');
             }
 
             return redirect()->intended('/');
         }
 
+        // Try to authenticate as a supervisor
+        if (Auth::guard('supervisor')->attempt($credentials)) {
+            $supervisor = Auth::guard('supervisor')->user();
+            
+            if (!$supervisor->isActive()) {
+                Auth::guard('supervisor')->logout();
+                return redirect()->back()->with('error', 'Your supervisor account is inactive.');
+            }
+
+            // Store supervisor info in session for dashboard access
+            session(['user_type' => 'supervisor', 'supervisor_id' => $supervisor->id]);
+            
+            // Debug: Log successful authentication
+            \Log::info('Supervisor authentication successful', [
+                'supervisor_id' => $supervisor->id,
+                'email' => $supervisor->email,
+                'session_data' => session()->all()
+            ]);
+            
+            return redirect()->route('supervisor.dashboard');
+        }
+
+        // Debug: Log authentication failure
+        \Log::info('Authentication failed', [
+            'email' => $request->email,
+            'user_exists' => User::where('email', $request->email)->exists(),
+            'supervisor_exists' => Supervisor::where('email', $request->email)->exists()
+        ]);
+
         // Check if user exists but password is wrong
         $user = User::where('email', $request->email)->first();
         if ($user) {
+            return redirect()->back()->with('error', 'Invalid password.');
+        }
+
+        // Check if supervisor exists but password is wrong
+        $supervisor = Supervisor::where('email', $request->email)->first();
+        if ($supervisor) {
             return redirect()->back()->with('error', 'Invalid password.');
         }
 

@@ -64,6 +64,19 @@
                                     </li>
                                 </ul>
                             </li>
+                            @elseif(Auth::user()->isSupervisor())
+                            <li class="slide">
+                                <a href="{{ route('supervisor.dashboard') }}" class="side-menu__item">
+                                    <i class="bx bx-user-check side-menu__icon"></i>
+                                    <span class="side-menu__label">Supervisor Dashboard</span>
+                                </a>
+                            </li>
+                            <li class="slide">
+                                <a href="{{ route('supervisor.profile') }}" class="side-menu__item">
+                                    <i class="bx bx-user side-menu__icon"></i>
+                                    <span class="side-menu__label">Profile</span>
+                                </a>
+                            </li>
                             @else
                             <li class="slide">
                                 <a href="{{ route('user.dashboard') }}" class="side-menu__item">

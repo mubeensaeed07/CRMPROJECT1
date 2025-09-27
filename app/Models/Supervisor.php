@@ -31,6 +31,67 @@ class Supervisor extends Authenticatable
         'password' => 'hashed',
     ];
 
+    /**
+     * Get the name of the unique identifier for the user.
+     *
+     * @return string
+     */
+    public function getAuthIdentifierName()
+    {
+        return 'id';
+    }
+
+    /**
+     * Get the unique identifier for the user.
+     *
+     * @return mixed
+     */
+    public function getAuthIdentifier()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Get the password for the user.
+     *
+     * @return string
+     */
+    public function getAuthPassword()
+    {
+        return $this->password;
+    }
+
+    /**
+     * Get the token value for the "remember me" session.
+     *
+     * @return string|null
+     */
+    public function getRememberToken()
+    {
+        return $this->remember_token;
+    }
+
+    /**
+     * Set the token value for the "remember me" session.
+     *
+     * @param  string|null  $value
+     * @return void
+     */
+    public function setRememberToken($value)
+    {
+        $this->remember_token = $value;
+    }
+
+    /**
+     * Get the column name for the "remember me" token.
+     *
+     * @return string
+     */
+    public function getRememberTokenName()
+    {
+        return 'remember_token';
+    }
+
     // Relationships
     public function admin()
     {
@@ -101,5 +162,44 @@ class Supervisor extends Authenticatable
     public function canViewReports($moduleId)
     {
         return $this->hasPermission($moduleId, 'can_view_reports');
+    }
+
+    // Method to check if supervisor is a super admin
+    public function isSuperAdmin()
+    {
+        // For now, return false as supervisors are not super admins
+        // You can modify this logic based on your business requirements
+        return false;
+    }
+
+    // Method to check if supervisor is an admin
+    public function isAdmin()
+    {
+        // Supervisors are not admins, they are supervisors
+        return false;
+    }
+
+    // Method to check if supervisor is a regular user
+    public function isUser()
+    {
+        // Supervisors are not regular users
+        return false;
+    }
+
+    // Method to check if this is a supervisor
+    public function isSupervisor()
+    {
+        // This is a supervisor
+        return true;
+    }
+
+    // Get the admin that manages this supervisor (already exists as admin())
+    // This method is already defined above
+
+    // Get all users managed by this supervisor (if needed)
+    public function managedUsers()
+    {
+        // Supervisors don't manage users directly, they have permissions for modules
+        return collect(); // Return empty collection
     }
 }

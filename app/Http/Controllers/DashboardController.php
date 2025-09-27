@@ -9,6 +9,11 @@ class DashboardController extends Controller
 {
     public function index()
     {
+        // Check if supervisor is logged in
+        if (Auth::guard('supervisor')->check()) {
+            return redirect()->route('supervisor.dashboard');
+        }
+
         if (!Auth::check()) {
             return redirect()->route('login');
         }

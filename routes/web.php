@@ -25,6 +25,7 @@ use App\Http\Controllers\GoogleAuthController;
 use App\Http\Controllers\HRMController;
 use App\Http\Controllers\SuperAdminController;
 use App\Http\Controllers\SupervisorController;
+use App\Http\Controllers\SupervisorAuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\DashboardController;
 
@@ -46,8 +47,8 @@ use App\Http\Controllers\DashboardController;
 // Route::get('', [Controller::class, 'index']);
 
 // DASHBOARDS //
-Route::get('/', [DashboardController::class, 'index'])->middleware(['auth', 'prevent.back']);
-Route::get('index', [DashboardController::class, 'index'])->middleware(['auth', 'prevent.back']);
+Route::get('/', [DashboardController::class, 'index'])->middleware(['auth:web,supervisor', 'prevent.back']);
+Route::get('index', [DashboardController::class, 'index'])->middleware(['auth:web,supervisor', 'prevent.back']);
 Route::get('index2', [DashboardsController::class, 'index2']);
 Route::get('index3', [DashboardsController::class, 'index3']);
 Route::get('index4', [DashboardsController::class, 'index4']);
@@ -317,8 +318,17 @@ Route::middleware(['auth', 'prevent.back'])->prefix('user')->name('user.')->grou
     Route::put('profile', [UserController::class, 'updateProfile'])->name('profile.update');
 });
 
+// Supervisor Routes
+Route::middleware(['auth:supervisor', 'prevent.back'])->prefix('supervisor')->name('supervisor.')->group(function () {
+    Route::get('dashboard', [SupervisorAuthController::class, 'dashboard'])->name('dashboard');
+    Route::get('profile', [SupervisorAuthController::class, 'profile'])->name('profile');
+    Route::put('profile', [SupervisorAuthController::class, 'updateProfile'])->name('profile.update');
+    Route::get('module/{module}', [SupervisorAuthController::class, 'module'])->name('module');
+    Route::post('logout', [SupervisorAuthController::class, 'logout'])->name('logout');
+});
+
 // Module Routes
-Route::middleware(['auth', 'prevent.back'])->group(function () {
+Route::middleware(['auth:web,supervisor', 'prevent.back'])->group(function () {
     // HRM Module Routes (from Modules/HRM)
     Route::prefix('hrm')->name('hrm.')->group(function () {
         Route::get('/', 'Modules\HRM\Http\Controllers\HRMController@dashboard')->name('dashboard');

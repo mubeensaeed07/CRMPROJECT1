@@ -10,7 +10,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Mail;
-use App\Mail\UserRegisteredMail;
+use App\Mail\SupervisorRegisteredMail;
 
 class SupervisorController extends Controller
 {
@@ -82,7 +82,7 @@ class SupervisorController extends Controller
 
         // Send email notification to the new supervisor
         try {
-            Mail::to($supervisor->email)->send(new UserRegisteredMail($supervisor, $password, auth()->user()->full_name));
+            Mail::to($supervisor->email)->send(new SupervisorRegisteredMail($supervisor, $password, auth()->user()->full_name));
         } catch (\Exception $e) {
             \Log::error('Failed to send supervisor registration email: ' . $e->getMessage());
         }
@@ -185,7 +185,7 @@ class SupervisorController extends Controller
 
         // Send email notification
         try {
-            Mail::to($supervisor->email)->send(new UserRegisteredMail($supervisor, $newPassword, auth()->user()->full_name));
+            Mail::to($supervisor->email)->send(new SupervisorRegisteredMail($supervisor, $newPassword, auth()->user()->full_name));
         } catch (\Exception $e) {
             \Log::error('Failed to send password reset email: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Password reset but failed to send email notification.');

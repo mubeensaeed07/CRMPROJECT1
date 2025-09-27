@@ -59,6 +59,15 @@
                                             </div>
                                             <div class="col-md-6">
                                                 <div class="mb-3">
+                                                    <label class="form-label">Salary</label>
+                                                    <input type="number" class="form-control" name="salary" value="{{ old('salary') }}" step="0.01" min="0">
+                                                    @error('salary')
+                                                        <div class="text-danger">{{ $message }}</div>
+                                                    @enderror
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
                                                     <label class="form-label">Phone Number</label>
                                                     <input type="tel" class="form-control" name="phone" value="{{ old('phone') }}">
                                                 </div>

@@ -535,6 +535,8 @@
                                                 Super Admin
                                             @elseif(Auth::user()->isAdmin())
                                                 Admin
+                                            @elseif(Auth::user()->isSupervisor())
+                                                Supervisor
                                             @else
                                                 User
                                             @endif
@@ -544,7 +546,11 @@
                             </a>
                             <!-- End::header-link|dropdown-toggle -->
                             <ul class="main-header-dropdown dropdown-menu pt-0 overflow-hidden header-profile-dropdown dropdown-menu-end" aria-labelledby="mainHeaderProfile">
+                                @if(Auth::user()->isSupervisor())
+                                <li><a class="dropdown-item d-flex" href="{{ route('supervisor.profile') }}"><i class="ti ti-user-circle fs-18 me-2 op-7"></i>Profile</a></li>
+                                @else
                                 <li><a class="dropdown-item d-flex" href="{{ route('user.profile') }}"><i class="ti ti-user-circle fs-18 me-2 op-7"></i>Profile</a></li>
+                                @endif
                                 <li><a class="dropdown-item d-flex" href="{{url('mail')}}"><i class="ti ti-inbox fs-18 me-2 op-7"></i>Inbox <span class="badge bg-success-transparent ms-auto">25</span></a></li>
                                 <li><a class="dropdown-item d-flex border-block-end" href="{{url('todo-list')}}"><i class="ti ti-clipboard-check fs-18 me-2 op-7"></i>Task Manager</a></li>
                                 <li><a class="dropdown-item d-flex" href="{{url('mail-settings')}}"><i class="ti ti-adjustments-horizontal fs-18 me-2 op-7"></i>Settings</a></li>
@@ -554,9 +560,15 @@
                                     <a class="dropdown-item d-flex" href="#" onclick="event.preventDefault(); document.getElementById('header-logout-form').submit();">
                                         <i class="ti ti-logout fs-18 me-2 op-7"></i>Log Out
                                     </a>
+                                    @if(Auth::user()->isSupervisor())
+                                    <form id="header-logout-form" action="{{ route('supervisor.logout') }}" method="POST" style="display: none;">
+                                        @csrf
+                                    </form>
+                                    @else
                                     <form id="header-logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                                         @csrf
                                     </form>
+                                    @endif
                                 </li>
                             </ul>
                         </div>  

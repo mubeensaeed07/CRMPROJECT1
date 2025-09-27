@@ -25,7 +25,10 @@ class User extends Authenticatable
         'password',
         'role_id',
         'is_approved',
-        'admin_id'
+        'admin_id',
+        'salary',
+        'created_by_type',
+        'created_by_id'
     ];
 
     /**
@@ -117,6 +120,14 @@ class User extends Authenticatable
     public function isUser()
     {
         return $this->role_id == 3;
+    }
+
+    /**
+     * Check if user is supervisor.
+     */
+    public function isSupervisor()
+    {
+        return $this->role_id == 7; // Supervisor role_id is 7
     }
 
     /**

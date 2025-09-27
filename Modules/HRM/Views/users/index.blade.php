@@ -32,7 +32,7 @@
                                         </div>
                                         <div>
                                             <p class="mb-0 text-muted">Total Users</p>
-                                            <h4 class="mb-0 fw-semibold">25</h4>
+                                            <h4 class="mb-0 fw-semibold">{{ $totalUsers }}</h4>
                                         </div>
                                     </div>
                                 </div>
@@ -49,7 +49,7 @@
                                         </div>
                                         <div>
                                             <p class="mb-0 text-muted">Active Users</p>
-                                            <h4 class="mb-0 fw-semibold">23</h4>
+                                            <h4 class="mb-0 fw-semibold">{{ $activeUsers }}</h4>
                                         </div>
                                     </div>
                                 </div>
@@ -66,7 +66,7 @@
                                         </div>
                                         <div>
                                             <p class="mb-0 text-muted">Inactive Users</p>
-                                            <h4 class="mb-0 fw-semibold">2</h4>
+                                            <h4 class="mb-0 fw-semibold">{{ $inactiveUsers }}</h4>
                                         </div>
                                     </div>
                                 </div>
@@ -83,7 +83,7 @@
                                         </div>
                                         <div>
                                             <p class="mb-0 text-muted">Departments</p>
-                                            <h4 class="mb-0 fw-semibold">5</h4>
+                                            <h4 class="mb-0 fw-semibold">{{ $departments }}</h4>
                                         </div>
                                     </div>
                                 </div>
@@ -108,43 +108,55 @@
                                                     <th>Department</th>
                                                     <th>Role</th>
                                                     <th>Status</th>
+                                                    <th>Created By</th>
                                                     <th>Actions</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <tr>
-                                                    <td>John Doe</td>
-                                                    <td>john.doe@company.com</td>
-                                                    <td>Human Resources</td>
-                                                    <td><span class="badge bg-primary">Employee</span></td>
-                                                    <td><span class="badge bg-success">Active</span></td>
-                                                    <td>
-                                                        <button class="btn btn-sm btn-warning">Edit</button>
-                                                        <button class="btn btn-sm btn-danger">Delete</button>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Jane Smith</td>
-                                                    <td>jane.smith@company.com</td>
-                                                    <td>Information Technology</td>
-                                                    <td><span class="badge bg-info">Manager</span></td>
-                                                    <td><span class="badge bg-success">Active</span></td>
-                                                    <td>
-                                                        <button class="btn btn-sm btn-warning">Edit</button>
-                                                        <button class="btn btn-sm btn-danger">Delete</button>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Mike Johnson</td>
-                                                    <td>mike.johnson@company.com</td>
-                                                    <td>Finance</td>
-                                                    <td><span class="badge bg-warning">Supervisor</span></td>
-                                                    <td><span class="badge bg-warning">Inactive</span></td>
-                                                    <td>
-                                                        <button class="btn btn-sm btn-warning">Edit</button>
-                                                        <button class="btn btn-sm btn-danger">Delete</button>
-                                                    </td>
-                                                </tr>
+                                                @forelse($users as $user)
+                                                    <tr>
+                                                        <td>{{ $user->full_name ?? $user->name }}</td>
+                                                        <td>{{ $user->email }}</td>
+                                                        <td>{{ $user->department ?? 'N/A' }}</td>
+                                                        <td>
+                                                            @if($user->role_id == 1)
+                                                                <span class="badge bg-danger">SuperAdmin</span>
+                                                            @elseif($user->role_id == 2)
+                                                                <span class="badge bg-info">Admin</span>
+                                                            @elseif($user->role_id == 3)
+                                                                <span class="badge bg-primary">User</span>
+                                                            @elseif($user->role_id == 7)
+                                                                <span class="badge bg-warning">Supervisor</span>
+                                                            @else
+                                                                <span class="badge bg-secondary">Unknown</span>
+                                                            @endif
+                                                        </td>
+                                                        <td>
+                                                            @if($user->is_approved)
+                                                                <span class="badge bg-success">Active</span>
+                                                            @else
+                                                                <span class="badge bg-warning">Inactive</span>
+                                                            @endif
+                                                        </td>
+                                                        <td>
+                                                            @if($user->created_by_type == 'admin')
+                                                                <span class="badge bg-info">Admin</span>
+                                                            @elseif($user->created_by_type == 'supervisor')
+                                                                <span class="badge bg-warning">Supervisor</span>
+                                                            @else
+                                                                <span class="badge bg-secondary">Unknown</span>
+                                                            @endif
+                                                        </td>
+                                                        <td>
+                                                            <button class="btn btn-sm btn-warning">Edit</button>
+                                                            <button class="btn btn-sm btn-danger">Delete</button>
+                                                        </td>
+                                                    </tr>
+                                                @empty
+                                                    <tr>
+                                                        <td colspan="7" class="text-center">No users found</td>
+                                                    </tr>
+                                                @endforelse
                                             </tbody>
                                         </table>
                                     </div>
